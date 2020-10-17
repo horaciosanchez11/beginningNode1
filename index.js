@@ -23,6 +23,8 @@ const newPostController = require('./controllers/newPost');
 const homeController = require('./controllers/home');
 const storePostController = require('./controllers/storePost');
 const getPostController = require('./controllers/getPost');
+const newUserController = require('./controllers/newUser');
+const storeUserController = require('./controllers/storeUser');
 const validateMiddleware = require('./middleware/validationMiddleware');
 
 app.use(express.static('public'));
@@ -77,6 +79,8 @@ app.get('/post/:id', getPostController);
 });*/
 app.get('/posts/new', newPostController);
 
+app.get('/auth/register', newUserController);
+
 /*app.post('/posts/store', (req, res) => {
     console.log(req.body);
     BlogPost.create(req.body,(error, blogpost) => {
@@ -95,6 +99,8 @@ app.get('/posts/new', newPostController);
     });
 });*/
 app.post('/posts/store', storePostController);
+
+app.post('/users/register', storeUserController);
 
 // takes in parameter host and database name
 mongoose.connect('mongodb://localhost/my_database',{useNewUrlParser:true});
