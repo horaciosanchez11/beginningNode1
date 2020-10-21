@@ -3,6 +3,7 @@ const ejs = require('ejs');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
+const expressSession = require('express-session');
 
 const app = new express();
 const customMiddleware = (req, res, next) => {
@@ -28,6 +29,7 @@ const storeUserController = require('./controllers/storeUser');
 const loginController = require('./controllers/login');
 const loginUserController = require('./controllers/loginUser');
 const validateMiddleware = require('./middleware/validationMiddleware');
+const authMiddleware = require('./middleware/authMiddleware');
 
 app.use(express.static('public'));
 app.use(customMiddleware);
@@ -36,6 +38,9 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(fileUpload());
 app.use('/posts/store', validateMiddleware); // added on chapter 8
 app.set('view engine', 'ejs');
+app.use(expressSession({
+    secret: 'keyboard cat'
+}))
 
 app.listen(4000, () => {
     console.log('App listening on port 4000');
@@ -79,7 +84,7 @@ app.get('/post/:id', getPostController);
     //res.render('create');
     
 });*/
-app.get('/posts/new', newPostController);
+app.get('/posts/new', authMiddleware, newPostController);
 
 app.get('/auth/register', newUserController);
 
@@ -102,7 +107,7 @@ app.get('/auth/login', loginController);
         res.redirect('/');
     });
 });*/
-app.post('/posts/store', storePostController);
+app.post('/posts/store', authMiddleware, storePostController);
 
 app.post('/users/register', storeUserController);
 
