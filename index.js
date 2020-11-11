@@ -30,6 +30,10 @@ const loginController = require('./controllers/login');
 const loginUserController = require('./controllers/loginUser');
 const validateMiddleware = require('./middleware/validationMiddleware');
 const authMiddleware = require('./middleware/authMiddleware');
+const redirectIfAuthenticatedMiddleware = require('./middleware/redirectIfAuthenticatedMiddleware');
+const logoutController = require('./controllers/logout');
+
+global.loggedIn = null;
 
 app.use(express.static('public'));
 app.use(customMiddleware);
@@ -40,7 +44,11 @@ app.use('/posts/store', validateMiddleware); // added on chapter 8
 app.set('view engine', 'ejs');
 app.use(expressSession({
     secret: 'keyboard cat'
-}))
+}));
+app.use('*', (req, res, next) => {
+    loggedIn = req.session.userId;
+    next();
+})
 
 app.listen(4000, () => {
     console.log('App listening on port 4000');
@@ -86,9 +94,9 @@ app.get('/post/:id', getPostController);
 });*/
 app.get('/posts/new', authMiddleware, newPostController);
 
-app.get('/auth/register', newUserController);
+app.get('/auth/register', redirectIfAuthenticatedMiddleware, newUserController);
 
-app.get('/auth/login', loginController);
+app.get('/auth/login', redirectIfAuthenticatedMiddleware, loginController);
 
 /*app.post('/posts/store', (req, res) => {
     console.log(req.body);
@@ -109,9 +117,15 @@ app.get('/auth/login', loginController);
 });*/
 app.post('/posts/store', authMiddleware, storePostController);
 
-app.post('/users/register', storeUserController);
+app.post('/users/register', redirectIfAuthenticatedMiddleware, storeUserController);
 
-app.post('/users/login', loginUserController);
+app.post('/users/login', redirectIfAuthenticatedMiddleware, loginUserController);
+
+app.get('/auth/logout', logoutController);
+
+app.use((req, res) => {
+    res.render('notfound');
+})
 
 // takes in parameter host and database name
 mongoose.connect('mongodb://localhost/my_database',{useNewUrlParser:true});
