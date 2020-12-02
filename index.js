@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
 const expressSession = require('express-session');
+const flash = require('connect-flash');
 
 const app = new express();
 const customMiddleware = (req, res, next) => {
@@ -40,6 +41,7 @@ app.use(customMiddleware);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(fileUpload());
+app.use(flash());
 app.use('/posts/store', validateMiddleware); // added on chapter 8
 app.set('view engine', 'ejs');
 app.use(expressSession({
