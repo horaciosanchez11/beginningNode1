@@ -52,8 +52,12 @@ app.use('*', (req, res, next) => {
     next();
 })
 
-app.listen(4000, () => {
-    console.log('App listening on port 4000');
+let port = process.env.PORT;
+if (port == null || port == "") {
+    port = 4000;
+}
+app.listen(port, () => {
+    console.log('App listening...');
 });
 
 /*app.get('/', async (req, res) => {
@@ -130,4 +134,4 @@ app.use((req, res) => {
 })
 
 // takes in parameter host and database name
-mongoose.connect('mongodb://localhost/my_database',{useNewUrlParser:true});
+mongoose.connect('mongodb+srv://mongo-user-1:Email159487@cluster0.0x6sk.mongodb.net/test',{useNewUrlParser:true});
